@@ -1,12 +1,21 @@
 version: "3.8"
 
 services:
+  python-app:
+    container_name: python-app
+    build: 
+      context: python-app
+    volumes: 
+      - app-logs:/logs/
+
   loki:
     image: grafana/loki:2.0.0
     container_name: loki
     command: 
       - -config.file=/etc/loki/local-config.yaml
       - -print-config-stderr=true
+    expose: 
+      - 3100
 
   promtail:
     image: grafana/promtail:2.0.0
@@ -15,8 +24,7 @@ services:
     volumes: 
       - /var/log:/data/var/log
       - ./promtail/config.yaml:/etc/promtail/config.yml
-    ports:
-      - 9080:9080
+      - app-logs:/logs
 
   grafana:
     image: grafana/grafana:latest
@@ -28,3 +36,4 @@ services:
 
 volumes: 
   grafana:
+  app-logs:
